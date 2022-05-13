@@ -1,74 +1,66 @@
 import pygame
 
 pygame.init()
-display = pygame.display.set_mode((1000, 600))
-clock = pygame.time.Clock()
 
-GRAY = pygame.Color('gray12')
+# Creation de la classe joueur (permet de faciliter son implantation pour les differents niveau)
+class Player(pygame.sprite.Sprite):
+    def __init__(self):
+        # Pour ne pas avoir d'erreur
+        super.__init__()
+        self.image = pygame.Surface((32,64))
+        self.image.fill('grey')
+        # On affiche "l'image" sur le rectangle
+        self.rect = self.image.get_rect(topleft = pos)
+        self.pressed_r = False
+        self.pressed_l = False
+        self.forw_maxspeed = 10
+        self.back_maxspeed = -self.forw_maxspeed
+        self.accel_x = 0.5
+        self.x_speed = 0
+        self.x = 0
+        self.y = 0
 
-display_width, display_height = display.get_size()
+    # Getting da input
+    def movement(self):
+        keys_pre = pygame.key.get_pressed()
 
-x = display_width * 0.45
-y = display_height * 0.8
+        if keys_pre[pygame.K_RIGHT]:
+            # vitesse instantanée
+            self.x_speed += 0.5
+            if self.x_speed >= self.forw_maxspeed:
+                self.x_speed = self.forw_maxspeed
+                self.x += self.x_speed
+            else:
+                self.x_speed += self.accel_x
 
-pressed_r = False
-pressed_l = False
-forw_maxspeed = 10
-back_maxspeed = -forw_maxspeed
-accel_x = 1
-x_speed = 0
+        if keys_pre[pygame.K_LEFT]:
+            # vitesse instantanée
+            # vitesse instantanée
+            self.x_speed += 0.5
+            if self.x_speed >= self.back_maxspeed:
+                self.x_speed = self.back_maxspeed
+                self.x += self.x_speed
+            else:
+                self.x_speed = - self.accel_x
 
-crashed = False
-while not crashed:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            crashed = True
-        if event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_LEFT:
-                pressed_l = True
-            elif event.key == pygame.K_RIGHT:
-                pressed_r = True
-        elif event.type == pygame.KEYUP:
-            if event.key == pygame.K_LEFT:
-                pressed_l = False
-                x_speed = 0
-            elif event.key == pygame.K_RIGHT:
-                pressed_r = False
-                x_speed = 0
+        if not keys_pre[pygame.K_RIGHT]:
+            # decelerate
+            while self.x_speed > 0:
+                self.x_speed = self.x_speed * 0.98
+            self.x_speed = 0
 
-    if pressed_r:
-        # vitesse instantanée
-        x_speed += 1
-        if x_speed >= forw_maxspeed:
-            x_speed = forw_maxspeed
-            x += x_speed
-        else:
-            x_speed += accel_x
+        if not keys_pre[pygame.K_RIGHT]:
+            # decelerate
+            if self.x_speed > 0:
+                self.x_speed = self.x_speed * 0.98
+            else:
+                self.x_speed = 0
 
-
-    if pressed_l:
-       #vitesse instantanée
-        x_speed += 1
-        if x_speed >= forw_maxspeed:
-            x_speed = forw_maxspeed
-            x = x + x_speed
-        else:
-            x_speed += accel_x
-
-    x += x_speed
-
-
-
-    if x>= 1000:
-        x=0
-
-    if x <= 0:
-        x = 1000
-
-    display.fill(GRAY)
-    pygame.draw.rect(display, (0, 120, 250), (x, y, 20, 40))
-    pygame.display.update()
-    clock.tick(60)
+    def update(self):
+        self.movement()
+        self.rect.x += self.x_speed
 
 
-pygame.quit()
+
+
+

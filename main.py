@@ -1,11 +1,8 @@
-import pygame
-
-import sys
+import pygame, sys, random
 
 from Scripts.Settings import *
 from Scripts.Player_settings import *
 
-# Don't import everything or game goes lag lag should import gradually...
 from Niveaux.Code.level_1 import Level
 from Niveaux.Code.level_data import level_1
 from Niveaux.Code.level_settings import *
@@ -19,25 +16,17 @@ mainClock = pygame.time.Clock()
 pygame.display.set_caption('A Perilous Journey')
 pygame.display.set_icon(Logo)
 
-click_sound = pygame.mixer.Sound("Musique/click_sound.mp3")
 x = 65
 y = 500
-start_x = 65
-start_y = 500
-
 x_speed = 0
 accel_x = 0
 max_speed = 5
 walkcount = 0
-
+frames = 0
 idle_wait = 0
-left_pressed = False
-right_pressed = False
-up_pressed = False
-down_pressed = False
-left_shift = False
 fullscreen = True
-
+frames_leaf = 0
+rand_x = 0
 
 info = pygame.display.Info()
 fullscreen_w, fullscreen_h = screen_width, screen_height = info.current_w, info.current_h
@@ -51,6 +40,7 @@ Main_background = pygame.transform.scale(pygame.image.load(os.path.join('Images/
 # un texte, une police, une couleur, une position et une surface(sur laquelle on affiche le texte).
 def draw_text(text, font, color, surface, text_x, text_y):
     textobj = font.render(text, 1, color)
+
     textrect = textobj.get_rect()
     textrect.topleft = (text_x, text_y)
     surface.blit(textobj, textrect)
@@ -92,6 +82,30 @@ def characteranimation():
         screen.blit(idle[idle_wait // 2], (x, y))
         idle_wait += 1
 
+def title_animation():
+    global frames
+    if frames + 1 >= 55:
+        frames = 0
+    screen.blit(title_name[frames // 3], (screen_width/4.6, screen_height/4.6))
+    frames +=1
+
+def leaf_falling(leafs):
+    global frames_leaf, rand_x
+    for i in range(leafs):
+        started = True
+        if not started:
+            frames_leaf = 0
+            started = False
+
+        if frames_leaf + 1 >= 366:
+            frames_leaf = 0
+        if frames_leaf == 0:
+            rand_x = random.randrange(20, screen_width)
+            screen.blit(leaf[frames_leaf // 2], (rand_x, 0))
+        screen.blit(leaf[frames_leaf // 2], (rand_x, 0))
+        frames_leaf += 1
+
+
 
 # On dÃ©finit une classe qui s'occupe de tout dans le Menu Principal
 class Main_Menu:
@@ -108,45 +122,42 @@ class Main_Menu:
             screen.blit(Main_background, (0, 0))
             # On affiche le Nom du jeu sur le fond d'Ã©cran
 
-            draw_text('A Perilous Journey', Main_font, (49, 61, 50), screen, screen_width / 3.25,
-                      screen_height / 2.65)
+            title_animation()
 
             # On veut trouver la position de la souris et on l'attribut Ã  mx et my
             mx, my = pygame.mouse.get_pos()
 
-            # On dÃ©finit trois boutons pour le menu.
-            Play_Game_but = pygame.Rect(screen_width / 2.4, screen_height / 1.78, 250, 50)
-            Options_but = pygame.Rect(screen_width / 2.4, screen_height / 1.5, 250, 50)
-            Quit_Game_but = pygame.Rect(screen_width / 2.4, screen_height / 1.3, 250, 50)
+            # On définit trois boutons pour le menu.
+            Play_Game_but = pygame.Rect(screen_width / 2.45, screen_height / 1.8, 260, 70)
+            Options_but = pygame.Rect(screen_width / 2.45, screen_height / 1.59, 260, 70)
+            Quit_Game_but = pygame.Rect(screen_width / 2.45, screen_height / 1.4, 260, 70)
 
-            # Si le curseur se trouve sur le button et si l'utilisateur click...
+            screen.blit(play_but, (screen_width / 2.45, screen_height / 1.8))
+            screen.blit(options_but, (screen_width / 2.45, screen_height / 1.59))
+            screen.blit(quit_but, (screen_width / 2.45, screen_height / 1.43))
+
+            # Si le curseur se trouve sur le rectangle et si l'utilisateur click...
             if Play_Game_but.collidepoint((mx, my)):
-                but_color1 = (100, 100, 100)
+                #...on affiche l'image du bouton clicked
+                screen.blit(play_but_clicked, (screen_width / 2.45, screen_height / 1.8))
                 if click:
                     pygame.mixer.Sound.set_volume(click_sound, 0.2)
                     pygame.mixer.Sound.play(click_sound)
-                    but_color1 = (52, 52, 52)
                     pygame.time.wait(100)
                     # On envoie le joueur vers le jeu.
-                    game_selection()
-
-            else:
-                but_color1 = (131, 90, 63)
+                    start_animation()
 
             if Options_but.collidepoint((mx, my)):
-                but_color2 = (100, 100, 100)
+                screen.blit(options_but_clicked, (screen_width / 2.45, screen_height / 1.59))
                 if click:
                     pygame.mixer.Sound.set_volume(click_sound, 0.2)
                     pygame.mixer.Sound.play(click_sound)
-                    but_color2 = (52, 52, 52)
                     pygame.time.wait(100)
                     # On envoie le joueur vers les options
                     options()
-            else:
-                but_color2 = (131, 90, 63)
 
             if Quit_Game_but.collidepoint((mx, my)):
-                but_color3 = (100, 100, 100)
+                screen.blit(quit_but_clicked, (screen_width / 2.45, screen_height / 1.43))
                 if click:
                     pygame.mixer.Sound.set_volume(click_sound, 0.2)
                     pygame.mixer.Sound.play(click_sound)
@@ -154,23 +165,11 @@ class Main_Menu:
                     pygame.time.wait(270)
                     pygame.quit()
                     sys.exit()
-            else:
-                but_color3 = (131, 90, 63)
 
-            # On dessine le Button Play_game_but sur l'Ã©cran
-            pygame.draw.rect(screen, but_color1, Play_Game_but)
-            # On dessine le texte "Play Game" sur le button.
-            draw_text("Play Game", Button_font, (255, 255, 255), screen, screen_width / 2.25,
-                      screen_height / 1.75)
-            # MÃªme chose pour le bouton Options
-            pygame.draw.rect(screen, but_color2, Options_but)
-            draw_text("Options", Button_font, (255, 255, 255), screen, screen_width / 2.25,
-                      screen_height / 1.5)
+            leaf_falling(10)
 
-            # MÃªme chose pour le bouton quitter le jeu
-            pygame.draw.rect(screen, but_color3, Quit_Game_but)
-            draw_text("Quit Game", Button_font, (255, 255, 255), screen, screen_width / 2.25,
-                      screen_height / 1.3)
+
+
 
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -424,25 +423,7 @@ class start_animation:
                                 click = False
                     intro_not_start = False
 
-            if right_pressed:
-                if x_speed >= max_speed:
-                    x_speed = max_speed
-                    x = x_speed
-                else:
-                    x_speed += accel_x
-
-            # On bouge le joueur
-            x += x_speed
-
-            if x > 1200:
-                play_level_1()
-
-            waiting += 1
-
-            screen.blit(forest_start, (0, 0))
-            characteranimation()
-            pygame.display.update()
-            mainClock.tick(FPS)
+            play_level_1()
 
 
 class play_level_1:
