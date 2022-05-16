@@ -91,19 +91,11 @@ def title_animation():
 
 def leaf_falling(leafs):
     global frames_leaf, rand_x
-    for i in range(leafs):
-        started = True
-        if not started:
-            frames_leaf = 0
-            started = False
-
-        if frames_leaf + 1 >= 366:
-            frames_leaf = 0
-        if frames_leaf == 0:
-            rand_x = random.randrange(20, screen_width)
-            screen.blit(leaf[frames_leaf // 2], (rand_x, 0))
-        screen.blit(leaf[frames_leaf // 2], (rand_x, 0))
-        frames_leaf += 1
+    if frames_leaf + 1 >= 366:
+        frames_leaf = 0
+        rand_x = random.randrange(20, screen_width)
+    screen.blit(leaf[frames_leaf // 2], (rand_x, 0))
+    frames_leaf += 1
 
 
 
