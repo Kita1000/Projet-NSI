@@ -11,8 +11,7 @@ FPS = 30
 
 # Importation des images
 options_background = pygame.image.load(os.path.join('Images/Transparent.png'))
-forest_start = pygame.image.load(os.path.join('Images/Forest_start.png'))
-forest_start_overlay = pygame.image.load(os.path.join('Images/Forest_start_overlay.png'))
+forest_background = pygame.image.load(os.path.join('Images/forest_bg.png'))
 Logo = pygame.image.load("Images/Logo_Game.jpg")
 
 # On definit des polices d'écritures
@@ -49,19 +48,3 @@ for i in range(1,185):
 fire_camp = []
 for i in range(1,6):
     fire_camp.append(pygame.image.load(os.path.join('Images/Fire_animation', 'fire_' + str(i) + '.png')))
-
-
-# Importation images du joueur
-idle = []
-for i in range(1,5):
-    idle.append(pygame.transform.scale(pygame.image.load(os.path.join('Player_images', 'Player_' + str(i) + '.png')), (120, 165)))
-
-
-walk_right = []
-for i in range(6,14):
-    walk_right.append(pygame.transform.scale(pygame.image.load(os.path.join('Player_images', 'Player_' + str(i) + '.png')), (120, 165)))
-
-
-walk_left = []
-for i in range(6,14):
-    walk_left.append(pygame.transform.scale(pygame.image.load(os.path.join('Player_images', 'Player_' + str(i) + '.png')), (120, 165)))

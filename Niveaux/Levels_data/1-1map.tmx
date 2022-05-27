@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.5" tiledversion="1.7.2" orientation="orthogonal" renderorder="right-down" width="120" height="30" tilewidth="32" tileheight="32" infinite="0" nextlayerid="5" nextobjectid="1">
  <editorsettings>
-  <export target="../Tilesets/lvl1_map.csv" format="csv"/>
+  <export target="../../../Documents/Pycharm/Game project - Copy/Niveaux/Tilesets/lvl1_map.csv" format="csv"/>
  </editorsettings>
- <tileset firstgid="1" source="../Tilesets/forest_tileset.tsx"/>
- <tileset firstgid="97" source="../Tilesets/setup_tiles.tsx"/>
+ <tileset firstgid="1" source="../../../Documents/Pycharm/Game project - Copy/Niveaux/Tilesets/forest_tileset.tsx"/>
+ <tileset firstgid="97" source="../../../Documents/Pycharm/Game project - Copy/Niveaux/Tilesets/setup_tiles.tsx"/>
  <layer id="1" name="Tile Layer 1" width="120" height="30">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,

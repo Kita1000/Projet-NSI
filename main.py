@@ -1,10 +1,9 @@
 import pygame, sys, random
 
 from Scripts.Settings import *
-from Scripts.Player_settings import *
 
-from Niveaux.Code.level_1 import Level
-from Niveaux.Code.level_data import level_1
+from Niveaux.Code.level_1 import *
+from Niveaux.Code.level_data import *
 from Niveaux.Code.level_settings import *
 
 pygame.init()
@@ -89,11 +88,11 @@ def title_animation():
     screen.blit(title_name[frames // 3], (screen_width/4.6, screen_height/4.6))
     frames +=1
 
-def leaf_falling(leafs):
+def leaf_falling():
     global frames_leaf, rand_x
-    if frames_leaf + 1 >= 366:
+    if frames_leaf + 1 >= 369:
         frames_leaf = 0
-        rand_x = random.randrange(20, screen_width)
+        rand_x = random.randrange(20, screen_width-20)
     screen.blit(leaf[frames_leaf // 2], (rand_x, 0))
     frames_leaf += 1
 
@@ -158,9 +157,7 @@ class Main_Menu:
                     pygame.quit()
                     sys.exit()
 
-            leaf_falling(10)
-
-
+            leaf_falling()
 
 
             for event in pygame.event.get():
@@ -277,6 +274,8 @@ class options:
 
             pygame.draw.rect(screen, but1_color, small_window_but)
             draw_text('1800x1600', Button_font, (0, 0, 25), screen, screen_width / 2 - 200, screen_height / 1.3)
+
+            leaf_falling()
 
             pygame.display.flip()
             mainClock.tick(FPS)
@@ -415,15 +414,23 @@ class start_animation:
                                 click = False
                     intro_not_start = False
 
-            play_level_1()
+            play_game()
 
 
-class play_level_1:
+
+class play_game:
     def __init__(self):
+        global forest_background, change_level
+        play_game.level_1(self)
 
+    def level_1(self):
+
+        current_level = level_2
         screen = pygame.display.set_mode((lvl_screen_width, lvl_screen_height))
-        level = Level(level_1, screen)
+        level = Level(current_level, screen)
         game_clock = pygame.time.Clock()
+        forest_background = pygame.transform.scale(pygame.image.load(os.path.join('Images/forest_bg.png')),(lvl_screen_width, lvl_screen_height)).convert()
+
         while True:
             mainClock.tick(FPS)
             for event in pygame.event.get():
@@ -432,17 +439,55 @@ class play_level_1:
                     sys.exit()
                 if event.type == pygame.KEYDOWN:
                     if event.key == pygame.K_ESCAPE:
-                        pause_menu()
+                        play_game.pause_menu(self)
 
-            screen.fill((0, 0, 0))
+            screen.blit(forest_background, (0, 0))
             level.run()
             game_clock.tick(60)
             pygame.display.flip()
 
+    def pause_menu(self):
+        mainClock.tick(FPS)
+        click = False
+        while True:
+            screen.blit(options_background, (0, 0))
 
-class pause_menu:
-    # add a pause screen
-    pass
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
+                if event.type == pygame.KEYDOWN:
+                    if event.key == pygame.K_ESCAPE:
+                        play_game.level_1(self)
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:
+                        click = True
+                if event.type == pygame.MOUSEBUTTONUP:
+                    if event.button == 1:
+                        click = False
+
+            mx, my = pygame.mouse.get_pos()
+
+            Return_but = pygame.Rect(screen_width / 2.3, screen_height / 2.5, 250, 75)
+
+            if Return_but.collidepoint((mx, my)):
+                but1_color = (82, 40, 120)
+                if click:
+                    pygame.mixer.Sound.set_volume(click_sound, 0.2)
+                    pygame.mixer.Sound.play(click_sound)
+                    pygame.time.wait(100)
+                    Main_Menu()
+            else:
+                but1_color = (112, 60, 152)
+
+            pygame.draw.rect(screen, but1_color, Return_but)
+            draw_text("Exit To Main Menu", Button_font, (255, 255, 255), screen, screen_width / 2.3,
+                      screen_height / 2.5)
+
+            draw_text("Menu", Button_font, (255, 255, 255), screen, screen_width / 2.1,
+                      screen_height / 3)
+
+            pygame.display.flip()
 
 
 # On renvoie le programme Ã la classe Main_Menu pour commencer le jeu.
